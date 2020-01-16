@@ -20,7 +20,7 @@ describe 'node_sample::default' do
       expect(chef_run).to install_package 'nginx'
     end
 
-    it 'enables nginx service & start' do
+    it 'enables nginx service ' do
       expect(chef_run).to enable_service 'nginx'
     end
 
@@ -39,6 +39,25 @@ describe 'node_sample::default' do
     it 'should install apt from recipe' do
       expect(chef_run).to include_recipe('apt')
     end
+
+# test to check if templates have been created.
+    it 'should create a proxy.conf template in /etc/nginx/sites-available' do
+      expect(chef_run).to create_template ('/etc/nginx/sites-available/proxy.conf').with_variables(proxy_port: node_sample['nginx']['proxy_port'])
+    end
+
+    it 'should create a symlink of proxy.conf from sites available to sites-enabled' do
+      expect(chef_run).to create_link('/etc/nginx/sites-enabled/proxy.conf').with_link_type(:symbolic)
+    end
+
+    it 'should delete the symlink from the default config in sites-enabled' do
+      expect(chef_run).to delete_link '/etc/nginx/sites-enabled/default'
+    end
+
+    it 'runs apt-get update' do
+      expect(chef_run).to update_apt_update 'update_sources'
+    end
+
+
 
   end
 
