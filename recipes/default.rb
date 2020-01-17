@@ -16,8 +16,8 @@ end
 
 package 'nginx'
 
-package 'npm'
-
+# package 'npm'
+nodejs_npm 'pm2'
 
 #services
 service 'nginx' do
@@ -29,12 +29,12 @@ service 'nginx' do
 end
 
 #npm installs
-nodejs_npm 'pm2'
+
 
 #creating a resource template
 template '/etc/nginx/sites-available/proxy.conf' do
   source 'proxy.conf.erb'
-  variables proxy_port: node_sample['nginx']['proxy_port']
+  variables proxy_port: node['nginx']['proxy_port']
   notifies :restart, 'service[nginx]'
 end
 
